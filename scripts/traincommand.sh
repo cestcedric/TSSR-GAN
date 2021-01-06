@@ -1,0 +1,23 @@
+python train.py \
+--pretrained_generator path/to/pretrained.pth \
+--numEpoch 20 \
+--lengthEpoch 5000 \
+--datasetPath path/to/dataset \
+--max_img_height 512 \
+--max_img_width 512 \
+--interpolationsteps 5 \
+--improved_estimation 1 \
+--gan \
+--depth \
+--flow \
+--spatial \
+--temporal \
+--loss_pingpong \
+--loss_layer \
+--loss_perceptual \
+--debug_output \
+--tb_experiment training \
+--debug_output_dir training_output/training \
+--warmup_discriminator \
+--warmup_boost 4 \
+--no_cudnn_benchmark
