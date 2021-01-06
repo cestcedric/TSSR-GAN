@@ -31,8 +31,8 @@ if not os.path.exists(args.output):
 with open(os.path.join(args.output, 'arguments.txt'), 'w') as f:
     for k,v in sorted(vars(args).items()): print('{0}: {1}'.format(k,v), file = f)
 
-result_list = os.listdir(args.result)
-target_list = os.listdir(args.target)
+result_list = sorted(os.listdir(args.result))
+target_list = sorted(os.listdir(args.target))
 folder_n = len(target_list)
 
 model = dm.DistModel()
@@ -47,6 +47,13 @@ len_dict    = dict.fromkeys(keys, 0)
 avg_dict    = dict.fromkeys(['Avg_'+_ for _ in keys], 0)
 folder_dict = dict.fromkeys(['FolderAvg_'+_ for _ in keys], 0)
 
+# Assume all sequences of same length
+step_dict = {'PSNR':{}, 'SSIM':{}, 'LPIPS':{}, 'tOF':{}, 'tLP100':{}}
+image_no = len(tools.listIMGinDIR(os.path.join(args.target, target_list[0])))
+for i in range(image_no):
+    for key in keys:
+        step_dict[key][str(i+1)] = []
+
 for folder_i in range(folder_n):
     result = tools.listIMGinDIR(os.path.join(args.result, result_list[folder_i]))
     target = tools.listIMGinDIR(os.path.join(args.target, target_list[folder_i]))
@@ -58,7 +65,7 @@ for folder_i in range(folder_n):
     list_dict = {}
     for key_i in keys:
         list_dict[key_i] = []
-    
+
     for i in range(cutfr, image_no-cutfr):
         output_img = cv2.imread(result[i])[:,:,::-1]
         target_img = cv2.imread(target[i])[:,:,::-1]
@@ -93,6 +100,7 @@ for folder_i in range(folder_n):
                 OF_diff = numpy.sqrt(numpy.sum(OF_diff * OF_diff, axis = -1)) # l1 vector norm
                 # OF_diff, ofy, ofx = crop_8x8(OF_diff)
                 list_dict['tOF'].append( OF_diff.mean() )
+                step_dict['tOF'][str(i+1)].append(list_dict['tOF'][-1])
                 msg += 'tOF %02.2f, ' %(list_dict['tOF'][-1])
             
             pre_out_grey = output_grey
@@ -103,10 +111,12 @@ for folder_i in range(folder_n):
             
         if 'PSNR' in keys:# psnr
             list_dict['PSNR'].append(metrics.psnr(target_img, output_img))
+            step_dict['PSNR'][str(i+1)].append(list_dict['PSNR'][-1])
             msg +='psnr %02.2f' %(list_dict['PSNR'][-1])
         
         if 'SSIM' in keys:# ssim
             list_dict['SSIM'].append(metrics.ssim(target_img, output_img))
+            step_dict['SSIM'][str(i+1)].append(list_dict['SSIM'][-1])
             msg +=', ssim %02.2f' %(list_dict['SSIM'][-1])
             
         if 'LPIPS' in keys or 'tLP100' in keys:
@@ -119,6 +129,7 @@ for folder_i in range(folder_n):
             if 'LPIPS' in keys: # LPIPS
                 dist01 = model.forward(img0, img1)
                 list_dict['LPIPS'].append(dist01[0])
+                step_dict['LPIPS'][str(i+1)].append(list_dict['LPIPS'][-1])
                 msg +=', lpips %02.2f' %(dist01[0])
             
             if 'tLP100' in keys and (i > cutfr):# tLP, temporal metrics
@@ -127,6 +138,7 @@ for folder_i in range(folder_n):
                 # print ('tardis %f, outdis %f' %(dist0t, dist1t))
                 dist01t = numpy.absolute(dist0t - dist1t) * 100.0 ##########!!!!!
                 list_dict['tLP100'].append( dist01t[0] )
+                step_dict['tLP100'][str(i+1)].append(list_dict['tLP100'][-1])
                 msg += ', tLPx100 %02.2f' %(dist01t[0])
             pre_img0 = img0
             pre_img1 = img1
@@ -162,10 +174,14 @@ for num_data in keys:
     sum_dict['FrameAvg_' + num_data] = pd.Series([sum_dict['FrameAvg_' + num_data] / len_dict[num_data]])
     folder_dict['FolderAvg_' + num_data] = pd.Series([folder_dict['FolderAvg_' + num_data] / folder_n])
     avg_dict['Avg_' + num_data] = pd.Series(numpy.float32(avg_dict['Avg_'+num_data]))
+    for i in range(image_no):
+        step_dict[num_data][str(i+1)] = numpy.array(step_dict[num_data][str(i+1)]).sum() / folder_n
     print('%s, total frame %d, total avg %02.4f, folder avg %02.4f' % 
         (num_data, len_dict[num_data], sum_dict['FrameAvg_' + num_data][0], folder_dict['FolderAvg_' + num_data][0]))
+    
 
-pd.DataFrame(avg_dict).to_csv(os.path.join(args.output, args.id + '.csv'), mode='a')
+pd.DataFrame(avg_dict).to_csv(os.path.join(args.output, args.id + '.csv'), mode='w')
 pd.DataFrame(folder_dict).to_csv(os.path.join(args.output, args.id + '.csv'), mode='a')
+pd.DataFrame(step_dict).to_csv(os.path.join(args.output, args.id + '.csv'), mode='a')
 pd.DataFrame(sum_dict).to_csv(os.path.join(args.output, args.id + '.csv'), mode='a')
 print('Finished.')

@@ -53,7 +53,8 @@ else:
 
 model = model.eval()
 
-subdirs = os.listdir(args.input_dir)
+subdirs = sorted(os.listdir(args.input_dir))
+total_duration = 0
 
 for subdir in subdirs:
     print(subdir + ': ', end = '')
@@ -84,3 +85,5 @@ for subdir in subdirs:
     print('{:2.2f}'.format(duration) + 's,', len(output), 'frames')
 
 print('Interpolation finished.')
+print('Total duration: {:2.2f}'.format(total_duration) + 's')
+print('Average duration per frame: {:2.2f}'.format(total_duration/((interpolated_frames+2)*len(subdirs))) + 's')
