@@ -3,10 +3,8 @@
 ## Table of Contents
 
 1. [Setup](#Setup)
-1. [Interpolation](#Interpolation)
+1. [Inference](#Inference)
 1. [Training](#Training)
-1. [Notes](#Notes)
-1. [TODO](#TODO)
 
 ----
 
@@ -22,7 +20,7 @@ Included in this repository:
 - Scripts for inference and benchmarking
 - Google Colab Notebook
 
-Everything is implemented in Python 3 and tested for PyTorch 1.4 with CUDA 10.0 or CUDA 10.1, but should also run with PyTorch >= 1.4, it is just not tested.
+Everything is implemented in Python 3 and tested for PyTorch 1.4 with CUDA 10.0 and CUDA 10.1 but should also run with PyTorch >= 1.4, it is just not tested.
 
 ---
 ## Setup
@@ -30,6 +28,9 @@ Everything is implemented in Python 3 and tested for PyTorch 1.4 with CUDA 10.0 
 2. Create python environment and install packages listed in `requirements.txt`. These packages also contain packages for the metric computation and probably a few not necessary anymore. PyTorch version just has to be >= 1.4, but you have to match CUDA from PyTorch with the NVCC version.
 3. Compile PWCNet and DAIN modules (make sure that your PyTorch CUDA version and NVCC version match): `scripts/setup.sh`
 4. Download model weights: `scripts/getModelWeights.sh`
+
+Alternatively to 3. you can install precompiled modules for PyTorch 1.4.0 with CUDA 10.0 on Python 3.6: `scripts/setup_precompiled.sh`
+Adaption to other Python versions should be fairly easy, just change the version in the script.
 
 ---
 ## Inference
@@ -52,7 +53,7 @@ python interpolate.py \
 --timestep 0.5
 ```
 
-A time step of 0.5 means one intermediate frame, so start <-0.5-> intermediate <-0.5-> end. For 9 intermediate frames use time step = 1/(intermediate frames + 1) = 0.1.
+A time step of 0.5 means one intermediate frame, so start <-0.5-> intermediate <-0.5-> end. For 9 intermediate frames use time step = 1/(intermediate frames + 1) = 1/(9+1) = 0.1.
 
 ---
 

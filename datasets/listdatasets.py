@@ -1,3 +1,4 @@
+import cv2
 import imagesize
 import numpy
 import os
@@ -60,22 +61,13 @@ def rescale_loader(root, im_path, max_frame_size = (0, 0), data_aug = True, impr
             .resize((w_res, h_res), Image.LANCZOS) \
             .crop((w_offset, h_offset, w_offset + w, h_offset + h))) 
             for path in paths ]
-        lr_pre = [ numpy.asarray(
-            Image.open(path)
-            .resize((w_res, h_res), Image.LANCZOS) \
-            .crop((w_offset, h_offset, w_offset + w, h_offset + h)) \
-            .resize((w // upscaling_scale, h // upscaling_scale), Image.LANCZOS))
-             for path in paths ]
     else:
         hr_pre = [ numpy.asarray(
             Image.open(path) \
             .crop((w_offset, h_offset, w_offset + w, h_offset + h))) 
             for path in paths ]
-        lr_pre = [ numpy.asarray(
-            Image.open(path)
-            .crop((w_offset, h_offset, w_offset + w, h_offset + h)) \
-            .resize((w // upscaling_scale, h // upscaling_scale), Image.LANCZOS))
-             for path in paths ]
+
+    lr_pre = [ cv2.GaussianBlur(frame, (0,0), sigmaX = 1.5)[::upscaling_scale, ::upscaling_scale, :] for frame in hr_pre ]
 
     if data_aug:
         if random.randint(0,1):
