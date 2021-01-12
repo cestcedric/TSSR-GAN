@@ -82,6 +82,7 @@ for subdir in subdirs:
             tools.print_tensor(os.path.join(path_out, str(i).zfill(5) + '.png'), f)
 
     duration = time.time() - time_start
+    total_duration += duration
     print('{:2.2f}'.format(duration) + 's,', len(output), 'frames')
 
 print('Interpolation finished.')

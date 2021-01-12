@@ -8,6 +8,7 @@
 
 ----
 
+
 This respository contains code and material for the TSSR-GAN project, a GAN for Temporal and Spatial Super-Resolution.
 Shoutout to the authors of [DAIN](https://github.com/baowenbo/DAIN) and [TecoGAN](https://github.com/thunil/TecoGAN).
 TSSR-GAN uses a lot of modules of these two networks.
@@ -20,10 +21,13 @@ Included in this repository:
 - Scripts for inference and benchmarking
 - Google Colab Notebook
 
-Everything is implemented in Python 3 and tested for PyTorch 1.4 with CUDA 10.0 and CUDA 10.1 but should also run with PyTorch >= 1.4, it is just not tested.
+Everything is implemented in Python 3 and tested for PyTorch 1.4 with CUDA 10.0 and CUDA 10.1 but should also run with PyTorch >= 1.4, it is just not tested. Python 2.x is not supported.
 
----
+----
+
+
 ## Setup
+
 1. Clone git `git clone https://github.com/cestcedric/TSSR-GAN.git`
 2. Create python environment and install packages listed in `requirements.txt`. These packages also contain packages for the metric computation and probably a few not necessary anymore. PyTorch version just has to be >= 1.4, but you have to match CUDA from PyTorch with the NVCC version.
 3. Compile PWCNet and DAIN modules (make sure that your PyTorch CUDA version and NVCC version match): `scripts/setup.sh`
@@ -32,7 +36,9 @@ Everything is implemented in Python 3 and tested for PyTorch 1.4 with CUDA 10.0 
 Alternatively to 3. you can install precompiled modules for PyTorch 1.4.0 with CUDA 10.0 on Python 3.6: `scripts/setup_precompiled.sh`
 Adaption to other Python versions should be fairly easy, just change the version in the script.
 
----
+----
+
+
 ## Inference
 
 Add some sequence base frames and put them into this structure:
@@ -55,7 +61,7 @@ python interpolate.py \
 
 A time step of 0.5 means one intermediate frame, so start <-0.5-> intermediate <-0.5-> end. For 9 intermediate frames use time step = 1/(intermediate frames + 1) = 1/(9+1) = 0.1.
 
----
+----
 
 
 ## Training
@@ -102,6 +108,7 @@ Start training using:
 
 Interpolationsteps denotes the newly generated intermediate frames, which means interpolationsteps = sequence length - 2.
 
----
+----
+
 
 # ENJOY!
