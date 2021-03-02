@@ -55,6 +55,7 @@ model = model.eval()
 
 subdirs = sorted(os.listdir(args.input_dir))
 total_duration = 0
+total_frames = 0
 
 for subdir in subdirs:
     print(subdir + ': ', end = '')
@@ -64,26 +65,38 @@ for subdir in subdirs:
         os.mkdir(path_out)
 
     files = tools.listIMGinDIR(path_in, depth=1)
-    frame_0 = tools.read_image(files[0]) if args.no_gpu else tools.read_image(files[0]).cuda()
-    frame_1 = tools.read_image(files[-1]) if args.no_gpu else tools.read_image(files[-1]).cuda()
+    files_start = files[:-1]
+    files_end = files[1:]
 
-    if len(frame_0.shape) == 3:
-        frame_0 = torch.unsqueeze(frame_0, dim = 0)
-        frame_1 = torch.unsqueeze(frame_1, dim = 0)
+    sr_prev = None
+    duration = 0
 
-    time_start = time.time()
+    for f_0, f_1 in zip(files_start, files_end):
+        frame_n = f_0.split('/')[-1].split('.')[0]
+        frame_0 = tools.read_image(f_0) if args.no_gpu else tools.read_image(f_0).cuda()
+        frame_1 = tools.read_image(f_1) if args.no_gpu else tools.read_image(f_1).cuda()
 
-    with torch.no_grad():
-        output = model.forward(frame_start = frame_0, frame_end = frame_1)
-        
-        for i, frame in enumerate(output):
-            f = frame.data.cpu().numpy()
-            f = tools.tensor2im(f)
-            tools.print_tensor(os.path.join(path_out, str(i).zfill(5) + '.png'), f)
+        if len(frame_0.shape) == 3:
+            frame_0 = torch.unsqueeze(frame_0, dim = 0)
+            frame_1 = torch.unsqueeze(frame_1, dim = 0)
 
-    duration = time.time() - time_start
-    total_duration += duration
-    print('{:2.2f}'.format(duration) + 's,', len(output), 'frames')
+        time_start = time.time()
+
+        with torch.no_grad():
+            output = model.forward(frame_start = frame_0, frame_end = frame_1, sr_prev = sr_prev)
+            if sr_prev != None:
+              output = output[1:]
+            sr_prev = output[-1]
+            
+            for i, frame in enumerate(output):
+                f = frame.data.cpu().numpy()
+                f = tools.tensor2im(f)
+                tools.print_tensor(os.path.join(path_out, frame_n + str(i).zfill(5) + '.png'), f)
+
+        duration += time.time() - time_start
+        total_duration += duration
+        total_frames += (interpolated_frames + 2)
+    print('{:2.2f}'.format(duration) + 's,', (interpolated_frames+2)*len(files_start), 'frames')
 
 print('Interpolation finished.')
 print('Total duration: {:2.2f}'.format(total_duration) + 's')
