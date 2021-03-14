@@ -71,7 +71,7 @@ for subdir in subdirs:
     sr_prev = None
     duration = 0
 
-    for f_0, f_1 in zip(files_start, files_end):
+    for n, (f_0, f_1) in enumerate(zip(files_start, files_end)):
         frame_n = f_0.split('/')[-1].split('.')[0]
         frame_0 = tools.read_image(f_0) if args.no_gpu else tools.read_image(f_0).cuda()
         frame_1 = tools.read_image(f_1) if args.no_gpu else tools.read_image(f_1).cuda()

@@ -124,7 +124,13 @@ class Generator(torch.nn.Module):
         # Initial frames for upscaling: 
         # if super-resolving sequence of more than two files, set the last output frame from the previous step as sr_prev
         lr_tmp = padded_frame_start
-        sr_tmp = tools.upscale(item = padded_frame_start, scale_factor = self.upscaleNet.scale/ie_scale) if sr_prev == None else tools.pad_tensor(sr_prev)[0]
+        if sr_prev == None:
+            sr_tmp = tools.upscale(item = padded_frame_start, scale_factor = self.upscaleNet.scale/ie_scale) if sr_prev == None else tools.pad_tensor(sr_prev)[0]
+        else:
+            min_pad_w = (lr_tmp.shape[-1]*self.upscaleNet.scale - sr_prev.shape[-1])
+            min_pad_h = lr_tmp.shape[-2]*self.upscaleNet.scale - sr_prev.shape[-2]
+            sr_tmp = tools.pad_tensor(tensor = sr_prev, min_pad_w = min_pad_w, min_pad_h = min_pad_h)[0]
+
         for timestep, frame in zip(time_offsets_rec, linear_frames):
             lr_tmp, sr_tmp = __step(
                 frame_start = lr_tmp,
