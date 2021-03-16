@@ -252,9 +252,9 @@ def mask_loss(t, mask, c):
 Pad tensors if width or height not divisible by 'value'
 Returns padded tensor and pad, for easy padding removal
 '''
-def pad_tensor(tensor, value = 128, mode = 'constant'):
-    pad_w = (value - (tensor.shape[-1] % value)) % value
-    pad_h = (value - (tensor.shape[-2] % value)) % value
+def pad_tensor(tensor, value = 128, mode = 'constant', min_pad_w = 0, min_pad_h = 0):
+    pad_w = max((value - (tensor.shape[-1] % value)) % value, min_pad_w)
+    pad_h = max((value - (tensor.shape[-2] % value)) % value, min_pad_h)
     if pad_h == pad_w == 0:
         return tensor, None
     pad = [pad_w//2, pad_w - pad_w//2, pad_h//2, pad_h - pad_h//2]
