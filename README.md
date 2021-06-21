@@ -9,7 +9,7 @@
 ----
 
 
-This respository contains code and material for the TSSR-GAN project, a GAN for Temporal and Spatial Super-Resolution.
+This respository contains code and material for the [TSSR-GAN](https://www.dropbox.com/s/auu4l91ha7huv66/Masterarbeit.pdf?dl=0) project, a GAN for Temporal and Spatial Super-Resolution.
 Shoutout to the authors of [DAIN](https://github.com/baowenbo/DAIN) and [TecoGAN](https://github.com/thunil/TecoGAN).
 TSSR-GAN uses a lot of modules of these two networks.
 
