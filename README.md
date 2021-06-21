@@ -9,9 +9,15 @@
 ----
 
 
-This respository contains code and material for the [TSSR-GAN](https://www.dropbox.com/s/auu4l91ha7huv66/Masterarbeit.pdf?dl=0) project, a GAN for Temporal and Spatial Super-Resolution.
+This respository contains code and material for the TSSR-GAN project, a GAN for Temporal and Spatial Super-Resolution.
+Check out this [PDF](https://www.dropbox.com/s/auu4l91ha7huv66/Masterarbeit.pdf?dl=0) for implementation details and comparisons to other state-of-the-art approaches.
 Shoutout to the authors of [DAIN](https://github.com/baowenbo/DAIN) and [TecoGAN](https://github.com/thunil/TecoGAN).
 TSSR-GAN uses a lot of modules of these two networks.
+
+
+Check out a 1080p version of this 4x spatial and 4x temporal upscaling example [here](https://www.dropbox.com/s/7l0wptqp0uy1noz/Comparison1080.mp4?dl=0), as well as many more frame-by-frame comparisons in the aforementioned [PDF](https://www.dropbox.com/s/auu4l91ha7huv66/Masterarbeit.pdf?dl=0).
+
+https://user-images.githubusercontent.com/30777307/122747246-2223f100-d28b-11eb-903d-2f4ee2960bf5.mp4
 
 Included in this repository:
 
